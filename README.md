@@ -1,7 +1,7 @@
 # deVault
 
 To run on emulator
-``` npx react-native run-android --variant=release```
+``` npx react-native run-android ```
 
 To sign apk
 ``` cd mobile/android && ./gradlew assembleRelease```
