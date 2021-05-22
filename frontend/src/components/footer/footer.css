@@ -1,0 +1,32 @@
+.footer {
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #00008c;
+  color:white;
+  position: relative;
+}
+
+.child-div {
+  text-align: center;
+  text-justify: auto;
+  margin-top: 2%;
+}
+.child-div:first-child{
+  text-align: justify;
+}
+h4 {
+  font-family: 'Roboto Slab', serif !important;
+  font-weight: 800 !important;
+  color: whitesmoke !important;
+  margin-bottom: 10% !important;
+  text-align: center;
+  /* text-shadow:  2px 0px 0px black; */
+}
+
+.child-div p {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 300;
+}
+
