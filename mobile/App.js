@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
 import Authentication from './screens/Authentication';
-import Authenticated from './screens/Authenticated';
+import AuthenticatedScreen from './screens/AuthenticatedScreen';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-community/google-signin';
-
 
 GoogleSignin.configure({
   scopes: ['https://mail.google.com'],
@@ -37,7 +36,8 @@ export default function App() {
   function authScreen(){
 
     if (authenticated) {
-      return <Authenticated />;
+      AuthenticatedScreen
+      return <AuthenticatedScreen />;
     }
     
     return <Authentication onGoogleButtonPress={onGoogleButtonPress} />;
