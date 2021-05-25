@@ -5,7 +5,7 @@ import {sign, verify} from 'jsonwebtoken';
 import {hashSync, compareSync} from 'bcryptjs';
 import {PrivateKey} from '@textile/hub';
 import {bip39} from 'bip39';
-import {CryptoJS} from require("crypto-js");
+import {CryptoJS} from "crypto-js";
 
 // Encrypt
 
@@ -15,7 +15,7 @@ router.use(urlencoded({
 }));
 router.use(json());
 
-router.post('/register', function (req, res) {
+router.post('/register', async function (req, res) {
     console.log("Incoming request into /register", req);
     const hashedPassword = hashSync(req.body.password, 8);
     const userIdentity = await PrivateKey.fromRandom().toString();
