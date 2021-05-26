@@ -6,7 +6,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 import { ActivityIndicator } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
-
+import {decrypt} from './utils/utils';
 
 var CryptoJS = require("crypto-js");
 
@@ -21,8 +21,8 @@ GoogleSignin.configure({
 
 const saveIntoStorage = (key, value) =>{
   return AsyncStorage.setItem(key, value).
-    then(resp => console.log(JSON.stringify(resp)))
-    .catch(err => console.log(JSON.stringify(err)))
+    then(resp => console.log("AFTER STORING "+ JSON.stringify(resp)))
+    .catch(err => console.log("ERROR MOFOS"+JSON.stringify(err)))
 };
 
 
@@ -33,7 +33,7 @@ export default function App() {
   const [authenticated, setAutheticated] = useState(false);
   const [loader,setLoader] = useState(false);
 
-  const endpoint = 'localhost:3000/devault/api/';
+  const endpoint = 'http://10.0.2.2:3000/devault/api/';
 
   useEffect(()=> {
     if(authenticated){
@@ -42,7 +42,7 @@ export default function App() {
       currentUser = auth().currentUser;
       payload['email'] = currentUser?.email;
       payload['displayName'] = currentUser?.displayName;
-      payload['photoUrl'] = currentUser?.photoURL;
+      payload['photoURL'] = currentUser?.photoURL;
       
       /* 
         Genereate key from email id
@@ -53,6 +53,15 @@ export default function App() {
         //alert(`EMAIL ${currentUser.email}`);
         //let key = crypto.createHash('sha256').update(currentUser?.email).digest('hex');
         let key =  CryptoJS.SHA256(currentUser?.email).toString();
+
+        console.log("############");
+        console.log(key);
+        var encryptedIdentity = CryptoJS.AES.encrypt("bsikziz2tomz3wevoemfbdkx6ia",key).toString();
+        console.log(`encrypted identity generated ${encryptedIdentity}`);
+
+        
+
+
         saveIntoStorage("email", currentUser?.email);
         saveIntoStorage("pvtKey", key);
 
@@ -62,14 +71,19 @@ export default function App() {
 
           if(resp.data){
 
-            let textileKey = CryptoJS.AES.decrypt(resp.data.textileKey,key).toString();
+            let textileKey = decrypt(resp.data.textileKey,currentUser?.email.trim());
+            console.log(`Textile Key ${textileKey}`);
+            //alert(textileKey);
             saveIntoStorage("bucketName", resp.data.bucketName);
-            saveIntoStorage("textileKey", resp.data.textileKey);
+            saveIntoStorage("textileKey", textileKey);
             saveIntoStorage("ipfsGateway", resp.data.ipfsGateway);
-            alert(`${JSON.stringify(resp.data)}`)
+            console.log(`Encrypted identity gotten ${resp.data.textileKey}`)
+            console.log(`decrypted identity ${textileKey}`)
+
           }
           setLoader(false);
           }).catch(err => {
+            console.log(`ERROR WITH AXIOS ${JSON.stringify(err)}`)
             setLoader(false);
           });
       }
