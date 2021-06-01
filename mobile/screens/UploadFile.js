@@ -98,7 +98,7 @@ export default function UploadFile( {documentType}) {
       name: name,
       path: location,
       email:email,
-      documentType: documentType.id,
+      documentType: documentType._id,
       photoType:path.split("/")[0],
       ...size
     }

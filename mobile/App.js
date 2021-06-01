@@ -65,32 +65,43 @@ export default function App() {
         saveIntoStorage("pvtKey", key);
 
         //Then Send it to backend to persists and send textile details to the frontend
-        
-        axios.post(`${endpoint}users/credentials`,payload).then(async(resp) => {
+        const credentialsRequest = axios.post(`${endpoint}users/credentials`,payload);
+        const getDocumentsRequest = axios.get(`${endpoint}document/${payload['email']}`);
 
-          if(resp.data){
+        axios.all([credentialsRequest, getDocumentsRequest]).then(axios.spread(async (...responses) => {
 
-            let textileKey = decrypt(resp.data.textileKey,currentUser?.email.trim());
+          const responseOne = responses[0];
+          const responseTwo = responses[1];
+
+          if(responseOne.data){
+            let textileKey = decrypt(responseOne.data.textileKey,currentUser?.email.trim());
             console.log(`Textile Key ${textileKey}`);
             //alert(textileKey);
             
-            saveIntoStorage("bucketName", resp.data.bucketName);
+            saveIntoStorage("bucketName", responseOne.data.bucketName);
             //saveIntoStorage("textileKey", textileKey);
             let keyInfoString = {key: textileKey};
             saveIntoStorage("keyInfoString", JSON.stringify(keyInfoString));
-            saveIntoStorage("ipfsGateway", resp.data.ipfsGateway);
-            saveIntoStorage("identity",resp.data.identity);
+            saveIntoStorage("ipfsGateway", responseOne.data.ipfsGateway);
+            saveIntoStorage("ipfsURL",`${responseOne.data.ipfsGateway}/ipfs/`)
+            saveIntoStorage("identity",responseOne.data.identity);
 
 
-            console.log(`Encrypted identity gotten ${resp.data.textileKey}`)
+            console.log(`Encrypted identity gotten ${responseOne.data.textileKey}`)
             console.log(`decrypted identity ${textileKey}`)
 
           }
+          
+          saveIntoStorage("documents",JSON.stringify(responseTwo.data));
+          console.log(`documents ${JSON.stringify(responseTwo.data)}`);
           setLoader(false);
-          }).catch(err => {
-            console.log(`ERROR WITH AXIOS ${JSON.stringify(err)}`)
-            setLoader(false);
-          });
+
+        })).catch(err => {
+          console.log(`ERROR WITH AXIOS ${JSON.stringify(err)}`)
+          setLoader(false);
+        });;
+
+       
       }
     }
 

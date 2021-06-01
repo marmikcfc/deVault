@@ -1,11 +1,13 @@
 import {Provider, TextInput} from 'react-native-paper';
 import React, {useState,useEffect, useCallback} from 'react';
-import {SafeAreaView, StyleSheet, View,Text} from 'react-native';
+import {SafeAreaView, StyleSheet, View,Text, ScrollView} from 'react-native';
 import {endpoint} from './../utils/constants';
 import axios from 'axios';
 
 import DropDown from 'react-native-paper-dropdown';
 import UploadFile from './UploadFile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ViewDocuments from './ViewDocuments';
 
 export default function Profile() {
   const [showDropDown, setShowDropDown] = useState(false);
@@ -16,7 +18,19 @@ export default function Profile() {
   const [docCategoryCounts,setDocCategoryCounts] = useState({});
   const [docsToUpload,setDocsToUpload] = useState(0);
   const [visible,setVisible] = useState(false);
+  const [docs,setDocs] = useState([]);
 
+
+
+  useEffect(() => {
+    (async function setDocuments(){
+    const documents = await AsyncStorage.getItem("documents");
+    console.log(`docs unloadedddd  ${JSON.stringify(docs)}`)
+    setDocs(JSON.parse(documents));
+    })();
+    console.log(`docs loadedddd  ${JSON.stringify(docs)}`);
+
+  },[]);
 
 
   useEffect(() => {
@@ -81,13 +95,13 @@ export default function Profile() {
 
   return (
     <Provider>
-      <View style={styles.containerStyle}>
+      <ScrollView style={styles.containerStyle}>
       <Text  style={styles.title}>Profile!</Text>
 
       <DropDown
           label={'Document Type'}
           mode={'outlined'}
-          value={docType}
+          value={docType} 
           setValue={setDocType}
           list={docTypes}
           visible={visible}
@@ -99,8 +113,10 @@ export default function Profile() {
         />
 
         {docType ===""? null:renderUploadComponents()}
-
-      </View>
+        
+        {docs.length == 0 ? null:(<ViewDocuments docs = {docs} />)}
+        
+      </ScrollView>
     </Provider>
   );
 }
@@ -109,7 +125,6 @@ const styles = StyleSheet.create({
   containerStyle: {
     flex: 1,
     marginHorizontal: 20,
-    justifyContent: 'center',
   },
   title: {
     fontSize: 25,
