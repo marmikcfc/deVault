@@ -10,6 +10,10 @@ target 'RNFirebaseGoogleAuth' do
 
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
 
+  pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
+
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
   target 'RNFirebaseGoogleAuthTests' do
     inherit! :complete
     # Pods for testing

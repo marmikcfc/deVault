@@ -4,9 +4,11 @@ import AuthenticatedScreen from './screens/AuthenticatedScreen';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-community/google-signin';
 import { ActivityIndicator } from 'react-native-paper';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import axios from 'axios';
-import {decrypt} from './utils/utils';
+import {decrypt, getIdentity } from './utils/utils';
+import {endpoint} from './utils/constants';
 
 var CryptoJS = require("crypto-js");
 
@@ -32,8 +34,9 @@ export default function App() {
 
   const [authenticated, setAutheticated] = useState(false);
   const [loader,setLoader] = useState(false);
+  
 
-  const endpoint = 'http://10.0.2.2:3000/devault/api/';
+
 
   useEffect(()=> {
     if(authenticated){
@@ -48,6 +51,7 @@ export default function App() {
         Genereate key from email id
         Store key to local storage
         Store email id to localsorage
+        store identity to localstorage
       */
       if(currentUser?.email){
         //alert(`EMAIL ${currentUser.email}`);
@@ -56,11 +60,6 @@ export default function App() {
 
         console.log("############");
         console.log(key);
-        var encryptedIdentity = CryptoJS.AES.encrypt("bsikziz2tomz3wevoemfbdkx6ia",key).toString();
-        console.log(`encrypted identity generated ${encryptedIdentity}`);
-
-        
-
 
         saveIntoStorage("email", currentUser?.email);
         saveIntoStorage("pvtKey", key);
@@ -74,9 +73,15 @@ export default function App() {
             let textileKey = decrypt(resp.data.textileKey,currentUser?.email.trim());
             console.log(`Textile Key ${textileKey}`);
             //alert(textileKey);
+            
             saveIntoStorage("bucketName", resp.data.bucketName);
-            saveIntoStorage("textileKey", textileKey);
+            //saveIntoStorage("textileKey", textileKey);
+            let keyInfoString = {key: textileKey};
+            saveIntoStorage("keyInfoString", JSON.stringify(keyInfoString));
             saveIntoStorage("ipfsGateway", resp.data.ipfsGateway);
+            saveIntoStorage("identity",resp.data.identity);
+
+
             console.log(`Encrypted identity gotten ${resp.data.textileKey}`)
             console.log(`decrypted identity ${textileKey}`)
 

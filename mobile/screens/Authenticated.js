@@ -1,9 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function Authenticated() {
+
+  const signOut = async () => {
+    auth().signOut();
+    await AsyncStorage.clear();
+  }
   const user = auth().currentUser;
   return (
     <View style={styles.screen}>
@@ -12,7 +18,7 @@ export default function Authenticated() {
       <Text style={styles.text}>{user?.displayName}</Text>
       <Text style={styles.text}>{user?.email}</Text>
       <View style={{ marginTop: 30 }}>
-        <Button title="Signout" onPress={() => auth().signOut()} />
+        <Button title="Signout" onPress={() => signOut()} />
       </View>
     </View>
   );
