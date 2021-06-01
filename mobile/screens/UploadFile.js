@@ -28,18 +28,29 @@ export default function UploadFile( {documentType}) {
         const path = `file://${getPath(image.uri)}`
         console.log(path);
         const resizedImageUri = await ImageResizer.createResizedImage(path, limits.maxWidth, limits.maxHeight, "PNG", 100, 0,undefined,false,{mode:'contain',onlyScaleDown:false});
-        console.log(`Resized image size ${resizedImageUri}`);
+        console.log(`Resized image size ${JSON.stringify(resizedImageUri)}`);
 
         //Read from react native filesystem and upload
 
-        return null;
+        return resizedImageUri.uri;
     }
 
     console.log(`doc Type = ${JSON.stringify(documentType)}`)
-    const getImageSize = (uri) => {
-      return Image.getSize(myUri, (width, height) => { return {width: width, height: height}});
 
+
+
+    const getImageSize = (uri) => {
+
+        return new Promise(
+            (resolve, reject) => {
+              Image.getSize(uri, (width, height) => {
+                resolve({ width, height });
+              });
+            },
+            (error) => reject(error)
+          );
     }
+
      /**
      * Pushes files to the bucket
      * @param file 
@@ -63,7 +74,7 @@ export default function UploadFile( {documentType}) {
      * @param name 
      * @param limits 
      */
-    const processAndStore = async (image, path, name, limits,buckets,bucketKey) => {
+    const processAndStore = async (image, path, name, limits,buckets,bucketKey, email) => {
     
     const finalImageURl = limits ? await readAndCompressImage(image, limits)  : `file://${getPath(image.uri)}`;
 
@@ -71,34 +82,41 @@ export default function UploadFile( {documentType}) {
 
     const finalImage =await RNFS.readFile(finalImageURl,"base64");
 
-    console.log(`FINAL Image ${JSON.stringify(finalImage)}`);
+    //console.log(`FINAL Image ${JSON.stringify(finalImage)}`);
     
     const location = `${path}${name}`
-    const size = getImageSize(finalImageURl);
-    console.log(`SIze of image = ${JSON.stringify(size)}`);
-    //const raw = await insertFile(finalImage, location,buckets,bucketKey)
+    const size = await getImageSize(finalImageURl);
 
-    //console.log(`Raw data ${JSON.stringify(raw)}`)
-    /*
+    console.log(`SIze of image = ${JSON.stringify(size)}`);
+
+    const raw = await insertFile(finalImage, location,buckets,bucketKey)
+
+    console.log(`Raw data ${JSON.stringify(raw)}`)
+    
     const metadata = {
       cid: raw.path.cid.toString(),
       name: name,
       path: location,
-      photoUrl,
+      email:email,
+      documentType: documentType.id,
+      photoType:path.split("/")[0],
       ...size
     }
 
-    console.log(`metadata = ${JSON.stringify(metafata)}`);
-    return metadata;*/
-    return null;
+    console.log(`metadata = ${JSON.stringify(metadata)}`);
+    return metadata;
   }
 
     
 
   const persistFileDetails = async (imageSchema) => {
-    
-    imageSchema["email"] = await AsyncStorage.getItem("email");
     console.log(`posting ${JSON.stringify(imageSchema)}`);
+
+    axios.post(`${endpoint}document/create`,imageSchema).then(resp => {
+        console.log(JSON.stringify(resp.data));
+    }).catch(err => {
+        console.log(`Something went wrong error! ${JSON.stringify(err)}`);
+    })
 
   }
 
@@ -107,7 +125,7 @@ export default function UploadFile( {documentType}) {
     const handleNewFile = async (file) => {
         
         const configString = await AsyncStorage.getItem("config");
-        let config = JSON.parse(configString);
+        let config = await retriveConfig();
         console.log(`Config: ${JSON.stringify(config)}`)
         const preview = {
           maxWidth: 500,
@@ -119,6 +137,7 @@ export default function UploadFile( {documentType}) {
         }
         const buckets = config.buckets;
         const bucketKey = config.bucketKey;
+        const email = await AsyncStorage.getItem("email");
 
         if (!config["buckets"] || !config["bucketKey"]) {
           console.error('Error uploading a file. No bucket client or root key')
@@ -134,11 +153,11 @@ export default function UploadFile( {documentType}) {
 
         console.log(`buckets and bucket key before process and store ${JSON.stringify(buckets)} \n ${bucketKey}`);
         
-        imageSchema['original'] = await processAndStore(file, 'originals/', filename,null,buckets ,bucketKey);
+        imageSchema['original'] = await processAndStore(file, 'originals/', filename,null,buckets ,bucketKey,email);
         
-        imageSchema['preview'] = await processAndStore(file, 'previews/', filename, preview);
+        imageSchema['preview'] = await processAndStore(file, 'previews/', filename,preview,buckets ,bucketKey,email);
     
-        imageSchema['thumb'] = await processAndStore(file, 'thumbs/', filename, thumb);
+        imageSchema['thumb'] = await processAndStore(file, 'thumbs/', filename, thumb,buckets ,bucketKey,email);
     
         const metadata = Buffer.from(JSON.stringify(imageSchema, null, 2));
         const metaname = `${now}_${file.name}.json`;
@@ -147,21 +166,19 @@ export default function UploadFile( {documentType}) {
         console.log(`Metadata of file uploaded ${metadata}`);
         await config["buckets"].pushPath(config["bucketKey"], path, metadata);
     
-        const photo = photos.length > 1 ? imageSchema['preview'] : imageSchema['original'];
+        //const photo = imageSchema['preview'] : imageSchema['original'];
         
-        console.log(`picture ${JSON.stringify(photo)}`);
-        console.log(`Links ${JSON.stringify(path)}`);
+        //console.log(`picture ${JSON.stringify(photo)}`);
+        //console.log(`Links ${JSON.stringify(path)}`);
 
-        let pic = { src: `${config["ipfsGateway"]}/ipfs/${photo.cid}`, width: photo.width, height: photo.height, key: photo.name};
+        //let pic = { src: `${config["ipfsGateway"]}/ipfs/${photo.cid}`, width: photo.width, height: photo.height, key: photo.name};
 
-        config["index"].path = [...config["index"].path, path];
-        config["photos"] = [...config["photos"], pic];
+        //config["index"].path = [...config["index"].path, path];
+        //config["photos"] = [...config["photos"], pic];
+        //await AsyncStorage.setItem("config",JSON.stringify(config));
+        //console.log(`uploaded image => ${JSON.stringify(pic)}`);
 
-        await AsyncStorage.setItem("config",JSON.stringify(config));
-
-        console.log(`uploaded image => ${JSON.stringify(pic)}`)
-
-
+        await persistFileDetails(imageSchema);
         //await retriveConfig();
         
       }
@@ -218,11 +235,12 @@ export default function UploadFile( {documentType}) {
         JSON.stringify(`config ${JSON.stringify(config)}`);
 
         await AsyncStorage.setItem("config",JSON.stringify(config));
+        return config;
     }
 
     const uploadImage = async () => {
         console.log("Upload Image Called");
-        await retriveConfig();
+       // await retriveConfig();
 
         await handleNewFile(singleFile);
     }
