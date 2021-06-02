@@ -7,4 +7,7 @@ To sign apk
 ``` cd mobile/android && ./gradlew assembleRelease```
 
 To create apk
-```npx react-native run-android --variant=release```
+```npx react-native run-android --variant=release```    
+
+Ro Create SHA1 KEy
+``` cd mobile/android && ./gradlew signingReport ```

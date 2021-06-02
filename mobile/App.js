@@ -66,9 +66,9 @@ export default function App() {
 
         //Then Send it to backend to persists and send textile details to the frontend
         const credentialsRequest = axios.post(`${endpoint}users/credentials`,payload);
-        const getDocumentsRequest = axios.get(`${endpoint}document/${payload['email']}`);
+        const getMyDocumentsRequest = axios.get(`${endpoint}document/${payload['email']}`);
 
-        axios.all([credentialsRequest, getDocumentsRequest]).then(axios.spread(async (...responses) => {
+        axios.all([credentialsRequest, getMyDocumentsRequest]).then(axios.spread(async (...responses) => {
 
           const responseOne = responses[0];
           const responseTwo = responses[1];

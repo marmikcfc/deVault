@@ -3,6 +3,7 @@ import cors from 'cors';
 import UserController from './user/UserController';
 import AuthController from './auth/AuthController';
 import SignupController from './signup/SignupController';
+import DocumentController from './documents/DocumentController';
 
 
 import { connect,mongoose } from 'mongoose';
@@ -20,6 +21,8 @@ app.options('*', cors());
 app.use('/devault/api/users', UserController);
 app.use('/devault/api/authenticate', AuthController);
 app.use('/devault/api/signup', SignupController);
+app.use('/devault/api/document', DocumentController);
+
 
 
 app.get('/health/full', (req, res) => {

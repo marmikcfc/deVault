@@ -3,11 +3,16 @@ import {urlencoded, json} from 'body-parser';
 import User from './User';
 import {bip39} from 'bip39';
 import {config} from 'dotenv';
+
+import {encrypt, decrypt} from '../utils/utils';
 var CryptoJS = require("crypto-js");
+import { getIdentity } from '../utils/utils';
 
 
 config();
 
+
+  
 
 const router = Router();
 router.use(urlencoded({ extended: true }));
@@ -40,32 +45,48 @@ router.post('/credentials', function (req, res) {
 
         let response = {};
         let userName = req.body.email.split("@")[0];
-        //const key = crypto.createHash('sha256').update(req.body.email).digest('hex').toString();  //bip39.mnemonicToSeedSync(memonicPhrases).toString('hex');
         console.log(req.body.email);
-        let key = CryptoJS.SHA256(req.body.email).toString();
-        console.log("############");
-        console.log(key);
-        var encryptedIdentity = CryptoJS.AES.encrypt(process.env.TEXTILE_KEY,key).toString();
         
+        console.log("############");
+        
+        console.log(`TEXTILE KEY ${process.env.TEXTILE_KEY}`);
+        
+        var encryptedIdentity = encrypt(process.env.TEXTILE_KEY,req.body.email.trim())
+        console.log(`encrypted identity ${encryptedIdentity}`);
+        
+
         response['bucketName'] = `deVault/${userName}`
         response['textileKey'] = encryptedIdentity;
         response['ipfsGateway'] = process.env.IPFS_GATEWAY;
         
-        
-        if (err) return res.status(500).send("There was a problem finding the user.");
+
+        if (err) {
+            console.log(`ERR in finding users ${JSON.stringify(err)}`)
+            return res.status(500).send("There was a problem finding the user.");
+        }
         if (!user) {
             //create a user
+            const identity = getIdentity();
+            
+           response['identity'] = identity;
+
+           console.log(`Identity String ${identity}`);
            return User.create({
                 email: req.body.email,
                 displayName: req.body.displayName,
                 photoURL:req.body.photoURL,
-                bucketName:`deVault/${userName}`
+                bucketName:`deVault/${userName}`,
+                identity: identity
 
             }).then(resp => {
-                res.status(200).send(response);
+                return res.status(200).send(response);
             }).catch(err => {
+                console.log(`ERR in creating users ${JSON.stringify(err)}`)
                 return res.status(500).send("There was a problem creating the user.");
             });
+        }
+        else{
+            response['identity'] = user.identity;
         }
 
         return res.status(200).send(response);
