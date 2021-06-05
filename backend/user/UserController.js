@@ -32,10 +32,12 @@ router.post('/', function (req, res) {
 
 // GETS A SINGLE USER FROM THE DATABASE
 router.get('/', function (req, res) {
-    User.findById(req.locals.decodedJwt.id, function (err, user) {
-        if (err) return res.status(500).send("There was a problem finding the user.");
+    User.find().then(( user) => {
         if (!user) return res.status(404).send("No user found.");
+        console.log(`Retuning users`);
         res.status(200).send(user);
+    }).catch(err => {
+       res.status(500).send("There was a problem finding the user.");
     });
 });
 

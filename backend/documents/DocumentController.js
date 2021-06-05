@@ -141,12 +141,11 @@ router.get('/', function(req,res) {
 
     console.log(`request ${JSON.stringify(request)}`);      
 
-    return ShareRequest.find(request).populate(toPopulate).populate('documentId').exec((err,requests) => {
+    return ShareRequest.find(request).populate('fromUserId').populate('toUserId').populate('documentId').exec((err,requests) => {
 
         if(err){
             console.log(`There was a mistake retriving a request. ${err}`);
             return res.status(500).send("There was a problem finding request.");    
-       
         }
 
         console.log(`Successfully requests ${JSON.stringify(requests)}`);

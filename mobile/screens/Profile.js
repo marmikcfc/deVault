@@ -94,11 +94,12 @@ export default function Profile() {
 
   }
 
-  return (
-    <Provider>
-      <ScrollView style={styles.containerStyle}>
-      <Text  style={styles.title}>Profile!</Text>
+  return ( 
+      <Provider>
 
+      <View style={styles.containerStyle}>
+      <Text  style={styles.title}>Profile!</Text>
+      <View>
       <DropDown
           label={'Document Type'}
           mode={'outlined'}
@@ -115,27 +116,30 @@ export default function Profile() {
 
         {docType ===""? null:renderUploadComponents()}
         
-        {docs.length == 0 ? null:(<ViewDocuments docs = {docs} />)}
-        
+      </View>
+
+
+       <View>
+       <ScrollView style={{marginTop:30}}>
+        {docs.length == 0 ? null:(<ViewDocuments docs = {docs} userIds = {[]}/>)}
+
       </ScrollView>
-    </Provider>
+       </View>
+     
+      </View>
+      </Provider>
+
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    flex: 1,
     marginHorizontal: 20,
+    flex: 1
   },
   title: {
     fontSize: 25,
     marginBottom: 30,
-  },
-  image: {
-    height: 150,
-    width: 150,
-    borderRadius: 150,
-    marginBottom: 20,
   },
   text: {
     fontSize: 20,

@@ -87,11 +87,12 @@ export default function App() {
             saveIntoStorage("identity",responseOne.data.identity);
             saveIntoStorage("userId",responseOne.data._id);
 
-
             console.log(`Encrypted identity gotten ${responseOne.data.textileKey}`)
             console.log(`decrypted identity ${textileKey}`)
 
           }
+
+          
           
           saveIntoStorage("documents",JSON.stringify(responseTwo.data));
           console.log(`documents ${JSON.stringify(responseTwo.data)}`);

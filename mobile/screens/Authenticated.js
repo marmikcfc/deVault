@@ -19,6 +19,7 @@ export default function Authenticated() {
 
   const [userId,setUserId] = useState(null); 
   const [docs,setDocs] = useState([]); 
+  const [userIds,setUserIds] = useState([]); 
 
   //const getDocsPayload = {"toUserId": }
   useEffect(() => {
@@ -34,20 +35,25 @@ export default function Authenticated() {
     const getDocsPayload = {toUserId: userId, notification:false};
     axios.get(`${endpoint}document`,getDocsPayload).then(response=>{
 
-        docs = response.data.map(function (obj) {
+       var documents = response.data.map(function (obj) {
           return obj.documentId;
         });
+
+        var userIds = response.data.map(function (obj) {
+          return obj.fromUserId;
+        });
+
+        setUserIds(userIds);
       
-        setDocs(response.data);
+        setDocs(documents);
         console.log(`data recieved ${JSON.stringify(response.data)}`);
     }).catch(err => {
       console.log(`Error ${JSON.stringify(err)}`);
     });
     console.log(`docs loadedddd  ${JSON.stringify(docs)}`);
-  });
+  },[]);
 
   return (
-    <ScrollView>
       <View style={styles.screen}>
       <Text style={styles.title}>You're Logged In</Text>
       <Image source={{ uri: user?.photoURL }} style={styles.image} />
@@ -56,14 +62,15 @@ export default function Authenticated() {
       <View style={{ marginTop: 30 }}>
         <Button title="Signout" onPress={() => signOut()} />
         <Text style={styles.text}>Documents shared with me</Text>
-
-        {docs.length == 0 ? null:(<ViewDocuments docs = {docs} />)}
       </View>
 
+      <ScrollView>
+      {docs.length == 0 ? null:(<ViewDocuments docs = {docs} userIds= {userIds}/>)}
+
+    </ScrollView>
 
     </View>
 
-    </ScrollView>
     
   );
 }
