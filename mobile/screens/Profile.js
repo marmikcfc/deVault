@@ -27,6 +27,7 @@ export default function Profile() {
     const documents = await AsyncStorage.getItem("documents");
     console.log(`docs unloadedddd  ${JSON.stringify(docs)}`)
     setDocs(JSON.parse(documents));
+    console.log("Docs set up clearly");
     })();
     console.log(`docs loadedddd  ${JSON.stringify(docs)}`);
 

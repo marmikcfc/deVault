@@ -87,6 +87,7 @@ router.post('/credentials', function (req, res) {
         }
         else{
             response['identity'] = user.identity;
+            response["_id"]  = user._id;
         }
 
         return res.status(200).send(response);

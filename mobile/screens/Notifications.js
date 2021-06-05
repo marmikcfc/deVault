@@ -10,13 +10,8 @@ import UploadFile from './UploadFile';
 function Notifications() {
 
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ flex:1 , justifyContent: 'center', alignItems: 'center' }}>
       <Text>Notifications!</Text>
-
-      <Image
-        style={{ width: '100%', height: '100%' }}
-        source={{ uri: "https://hub.textile.io/ipfs/bafkreibovl3vkgwzelf4krteqx3qzpf6ceg2mhtex4wr6tvcffmugm57ku" }}
-      />
 
     </View>
   );

@@ -85,6 +85,7 @@ export default function App() {
             saveIntoStorage("ipfsGateway", responseOne.data.ipfsGateway);
             saveIntoStorage("ipfsURL",`${responseOne.data.ipfsGateway}/ipfs/`)
             saveIntoStorage("identity",responseOne.data.identity);
+            saveIntoStorage("userId",responseOne.data._id);
 
 
             console.log(`Encrypted identity gotten ${responseOne.data.textileKey}`)
