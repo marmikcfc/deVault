@@ -7,6 +7,7 @@ import {config} from 'dotenv';
 import {encrypt, decrypt} from '../utils/utils';
 var CryptoJS = require("crypto-js");
 import { getIdentity } from '../utils/utils';
+import Enterprise from './Enterprise';
 
 
 config();
@@ -97,5 +98,31 @@ router.post('/credentials', function (req, res) {
         
     });
 });
+
+/**
+ *  
+ * ENTERPRISE
+ *  
+ */
+
+ // CREATES A NEW USER
+router.post('/enterprise/create', function (req, res) {
+    Enterprise.create(req).then((user)=> {
+        res.status(200).send(user);
+    }).catch(err => {
+        res.status(500).send("There was a problem adding the information to the database.");
+    });
+});
+
+
+router.get('/enterprise/',function (req, res) {
+    Enterprise.find().then(users => {
+        console.log(`returning users ${users}`);
+        res.status(200).send(users);
+    }).catch(err => {
+        console.log(`There was a problem finding the enterprise users from the database.`);
+    })
+});
+
 
 export default router;

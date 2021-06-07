@@ -14,10 +14,7 @@ router.use(json());
 
 // CREATES A NEW Document for a user
 router.post('/create', function (req, res) {
-    let original = req.body.original;
-    let thumb = req.body.thumb;
-    let preview = req.body.preview;
-    Document.insertMany([original,thumb,preview]).then(docs => {
+    Document.create(req.body).then(docs => {
 
         console.log(`added ${JSON.stringify(docs)}`);
         res.status(200).send(docs);
@@ -30,10 +27,7 @@ router.post('/create', function (req, res) {
 
 // Creates a new document type
 router.post('/types/create', function (req, res) {
-    return DocumentType.create({
-        category:req.body.category,
-        name: req.body.name
-    }).then(docType => {
+    return DocumentType.create(req.body).then(docType => {
         console.log(`added ${JSON.stringify(docType)}`);
         return res.status(200).send(docType);
     }).catch(err => {
@@ -56,7 +50,7 @@ router.get('/types', function (req, res) {
 
 
 
-//gets all documents
+//gets my documents
 router.get('/:email', function (req, res) {
     return Document.find({email:req.params.email}).populate('documentType').exec((err,docs)=> {
         
