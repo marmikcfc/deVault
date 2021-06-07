@@ -2,10 +2,11 @@ import {Router} from 'express';
 import {urlencoded, json} from 'body-parser';
 import Document from './Document';
 import DocumentType from './DocumentType';
-import ShareRequest from './ShareRequest';
 import {config} from 'dotenv';
-
+import History from './History';
 import mongoose from 'mongoose'
+import ShareRequest from '../requests/ShareRequest';
+import User from '../user/User';
 config();
 
 const router = Router();
@@ -17,6 +18,18 @@ router.post('/create', function (req, res) {
     Document.create(req.body).then(docs => {
 
         console.log(`added ${JSON.stringify(docs)}`);
+
+        //Create History record
+        // Replace with QLDB Persistence
+        History.create({
+            documentId: docs._id.toString(),
+            status:'created'
+        }).then(history => {
+            console.log(`Created History for user ${req.body.email}`);
+        }).catch(err => {
+            console.log(`Something Went Wrong ${err}`)
+        });
+
         res.status(200).send(docs);
     }).catch(err => {
         console.log(`There was a problem adding the information to the database. ${err}`)
@@ -50,7 +63,7 @@ router.get('/types', function (req, res) {
 
 
 
-//gets my documents
+//gets all documents for provided email
 router.get('/:email', function (req, res) {
     return Document.find({email:req.params.email}).populate('documentType').exec((err,docs)=> {
         
@@ -65,87 +78,114 @@ router.get('/:email', function (req, res) {
 });
 
 
-/*
-    1) Add Request
-    2) Update Status
-    3) Get All shareRequests
-*/
-router.post('/share', function(req,res){   
+//gets all documents for provided id
+router.get('/doc/:id', function (req, res) {
+    console.log(`Returning for ${req.params.id}`)
     
-    console.log(`Addding ${JSON.stringify(req.body)}`)
-    return ShareRequest.create(req.body).then(request => {
-        console.log(`added ${JSON.stringify(request)}`);
-        return res.status(200).send(request);
-    }).catch(err => {
-        console.log(`There was an error adding a request. ${JSON.stringify(request)} \n ${err}`);
-        return res.status(500).send("There was a problem finding request types.");
-    });
-});
-
-
-router.put('/share/:id', function(req,res) {
-    return ShareRequest.findOneAndUpdate(req.params.id,req.body, {upsert:false}).then(request => {
-            console.log(`Successfully update ${JSON.stringify(request)}`);
-            res.status(200).send(request);
-    }).catch(err => {
-
-        console.log(`There was a mistake adding a request. ${err}`);
-        return res.status(500).send("There was a problem finding request types.");    
-    })
-
-});
-
-
-
-router.get('/', function(req,res) {
-    let request = {}
-    var toPopulate = '';
-    console.log(`request ${JSON.stringify(request)}`);      
-    if (req.body.hasOwnProperty("toUserId")){
-        request.toUserId = mongoose.Types.ObjectId(req.body.toUserId);
-        toPopulate = 'toUserId';
-
-        if (req.body.notification === false){
-            request.expiryDate  = {$gte: new Date()}
-        }
-        else {
-            request.isViewed = false;
-        }
-
-    }
-
-    console.log(`request ${JSON.stringify(request)}`);      
-
-    if (req.body.hasOwnProperty("fromUserId")){
-        request.fromUserId = mongoose.Types.ObjectId(req.body.fromUserId);
-        toPopulate = 'fromUserId';
-
-        if (req.body.notification === false){
-            request.expiryDate  = {$gte: new Date()}
-        }
-        else {
-            request.isViewed = false;
-        }
+    return Document.findById(req.params.id).populate('documentType').exec((err,docs)=> {
         
-    }
+        if(err){
+            console.log(`There was a problem finding doc types. ${err}`);
+            return res.status(500).send("There was a problem finding doc types.");    
+        }
 
-    console.log(`request ${JSON.stringify(request)}`);      
+        console.log(`returning all documents for ${req.params.id}. Documents are ${JSON.stringify(docs)}`)
+        return res.status(200).send(docs);
+    })
+});
 
-  
 
-    console.log(`request ${JSON.stringify(request)}`);      
 
-    return ShareRequest.find(request).populate('fromUserId').populate('toUserId').populate('documentId').exec((err,requests) => {
+//gets document history
+router.get('/history/:id', function(req,res) {
+    History.find({documentId:req.params.id}).populate('documentId').
+            populate({ path: 'shareRequestId', populate: { path: 'company' }})
+            .exec(async (err,results) => {
+                console.log(`returning all documents for ${req.params.id}. Documents are ${JSON.stringify(results)}`)
+                if(err){
+                    console.log(`ERROR ${err}`);
+                }
+
+                let user =  await User.findOne({email:results[0].documentId.email});
+                console.log(`user ${JSON.stringify(user)} for email ${results[0].documentId.email}`);
+                console.log(`results ${results} \n\n`)
+                var response = [];
+                var userActions = ['created','granted'];
+                var systemActions = ['request_expired','document_expired'];
+                var companyActions = ["requested","approved","rejected"];
+        
+                results.forEach( result => {
+                    let r = {document:result.documentId};
+                    console.log(`resulrt ${result} \n\n`)
+                    var stat = result.status
+
+                    console.log(`status ${stat} \n\n`)
+                    switch(stat) {
+                        case "created":
+                            console.log("IN CREAED")
+                            r.action = 'created';
+                            r.by = user;
+                            r.for = '';
+                            break;
+
+                        case 'granted':
+                            r.action = 'granted';
+                            r.by = user;
+                            if(result.hasOwnProperty('shareRequestId')){
+                                r.for = result.shareRequestId.company;
+                            }
+                            break;
+                        
+                        case "requested":
+                            console.log("IN Company Actions")
+                            r.action = stat;
+                            r.for = user;
+                            r.by = result.shareRequestId.company;
+                            
+                            break;
+
+                        case "approved":
+                            console.log("IN Company Actions")
+                            r.action = stat;
+                            r.for = user;
+                            r.by = result.shareRequestId.company;
+                            
+                            break;
+
+                        case "rejected":
+                            console.log("IN Company Actions")
+                            r.action = stat;
+                            r.for = user;
+                            r.by = result.shareRequestId.company;
+                            break;
+                            
+                        default:
+                            console.log("Default")
+                            r.action = stat;
+                            r.for = '';
+                            r.by = '';
+                    }
+                    response.push(r);                    
+                });
+
+                return res.status(200).send(response);
+
+            }); 
+
+    /*
+
+    return Document.findById(req.params.id).populate('user').populate('company').populate('documentId').exec((err,requests) => {
 
         if(err){
             console.log(`There was a mistake retriving a request. ${err}`);
             return res.status(500).send("There was a problem finding request.");    
         }
-
-        console.log(`Successfully requests ${JSON.stringify(requests)}`);
+           
+        
             return res.status(200).send(requests);
-    });
+    });*/
 });
+
 
 
 

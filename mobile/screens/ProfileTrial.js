@@ -30,8 +30,8 @@ function ProfileScreen({ navigation }) {
     const documents = await AsyncStorage.getItem("documents");
     logger.info(`docs unloadedddd  ${JSON.stringify(docs)}`)
     setDocs(JSON.parse(documents));
-    let docMap = {};
-    logger.info(`docssss ${JSON.stringify(docs)}`)
+    //let docMap = {};
+    //logger.info(`docssss ${JSON.stringify(docs)}`)
     if (documents){
         /*JSON.parse(documents).forEach(element => {
             docMap[element.documentType] = element;

@@ -19,3 +19,7 @@ To Create SHA1 KEy
  - Share only with company
  - Mobile Phone verification
  - Setup oatuh using react-native-app-auth
+ - use user buckets instead of single bucket
+ - Lock/unlock selfie
+ - JWT for user
+ - Account management for companies [Create Account, Forget Password and other things]

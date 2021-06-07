@@ -2,8 +2,8 @@ import {Schema, model} from 'mongoose';
 
 const shareSchema = new Schema({
   documentId: {type: Schema.Types.ObjectId, ref: 'Document'},
-  fromUserId: {type: Schema.Types.ObjectId, ref: 'User'},
-  toUserId: {type: Schema.Types.ObjectId, ref: 'User'},
+  user: {type: Schema.Types.ObjectId, ref: 'User'},
+  company: {type: Schema.Types.ObjectId, ref: 'Enterprise'},
   isDownloadable: {type:Boolean, default: false},
   expiryDate:{type:Date,default:new Date(+new Date() + 1*24*60*60*1000) },
   isViewed: {type:Boolean, default: false}, 

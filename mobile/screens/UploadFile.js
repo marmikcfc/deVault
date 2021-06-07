@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity,SafeAreaView, ScrollVie
 import DocumentPicker from 'react-native-document-picker';
 import publicGallery from './../utils/constants';
 import {getBucketKey,getBucketLinks, getPhotoIndex,galleryFromIndex} from './../utils/bucketUtils';
+import {getRandomInt} from './../utils/utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {PrivateKey} from '@textile/hub';
 import ImageResizer from 'react-native-image-resizer';
@@ -11,7 +12,7 @@ import axios from 'axios';
 import { DatePickerModal } from 'react-native-paper-dates';
 import ViewDocument from './ViewDocument';
 
-import {Provider, TextInput, Button} from 'react-native-paper';
+import { TextInput, Button} from 'react-native-paper';
 
 import  DropDown  from  'react-native-paper-dropdown';
 
@@ -43,7 +44,7 @@ export default function UploadFile( {documentType}) {
 
     const [date, setDate] = useState(undefined);
     const [open, setOpen] = useState(false);
-    const [number, setNumber] = useState('');
+    //const [number, setNumber] = useState('');
 
     const [documentObject,setDocumentObject] = useState({
       cid:['','']
@@ -59,7 +60,15 @@ export default function UploadFile( {documentType}) {
           setExpiryDate(docs[documentType._id].expiryDate);
           setDocNumber(docs[documentType._id].documentNumber);
         }
+
+        if(documentType.category == "SELFIE"){
+          setDocNumber(getRandomInt(10000,99999));
+        }
+
         })();
+
+        
+
     },[]);
 
 
@@ -168,7 +177,7 @@ export default function UploadFile( {documentType}) {
       email:email,
       documentType: documentType._id,
       photoType:path.split("/")[0],
-      documentNumber: number,
+      documentNumber: docNumber,
       expiryDate:(documentType.doesExpire? expiryDate:null),
       ...size
     };
@@ -442,10 +451,14 @@ export default function UploadFile( {documentType}) {
           documentObject.hasOwnProperty('documentType')? (<ViewDocument document = {documentObject} />):null
         }
 
-        {documentType.category == "SELFIE"? null:( <TextInput
+        {documentType.category == "SELFIE"? (<Text> 
+
+            Click a picture with the {docNumber} written on the paper and upload:
+
+        </Text>):( <TextInput
               label={`Document Number`}
-              value={number}
-              onChangeText={text => setNumber(text)}
+              value={docNumber}
+              onChangeText={text => setDocNumber(text)}
             />)}
 
         {documentType.doesExpire == true? renderDateComponent(): null}
@@ -466,10 +479,7 @@ export default function UploadFile( {documentType}) {
 
         </View>
 
-        </ScrollView> 
-
-
-
+        </ScrollView>
 
       </View>
     

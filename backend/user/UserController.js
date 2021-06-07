@@ -102,12 +102,12 @@ router.post('/credentials', function (req, res) {
 /**
  *  
  * ENTERPRISE
- *  
+ *
  */
 
- // CREATES A NEW USER
+ // CREATES A NEW Company
 router.post('/enterprise/create', function (req, res) {
-    Enterprise.create(req).then((user)=> {
+    Enterprise.create(req.body).then((user)=> {
         res.status(200).send(user);
     }).catch(err => {
         res.status(500).send("There was a problem adding the information to the database.");
@@ -115,7 +115,8 @@ router.post('/enterprise/create', function (req, res) {
 });
 
 
-router.get('/enterprise/',function (req, res) {
+//Gets a list of all companies
+router.get('/enterprise',function (req, res) {
     Enterprise.find().then(users => {
         console.log(`returning users ${users}`);
         res.status(200).send(users);
@@ -124,5 +125,15 @@ router.get('/enterprise/',function (req, res) {
     })
 });
 
+
+//Gets a particular company
+router.get('/enterprise/:id',function (req, res) {
+    Enterprise.findById(req.params.id).then(user => {
+        console.log(`returning user ${user}`);
+        res.status(200).send(user);
+    }).catch(err => {
+        console.log(`There was a problem finding the enterprise users from the database.`);
+    })
+});
 
 export default router;
