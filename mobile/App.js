@@ -9,8 +9,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {decrypt, getIdentity } from './utils/utils';
 import {endpoint} from './utils/constants';
+import log from 'loglevel';
+
+
+var logger = log.getLogger("Main App");
+logger.setLevel('INFO');
+
+
 
 var CryptoJS = require("crypto-js");
+
 
 
 GoogleSignin.configure({
@@ -23,8 +31,8 @@ GoogleSignin.configure({
 
 const saveIntoStorage = (key, value) =>{
   return AsyncStorage.setItem(key, value).
-    then(resp => console.log("AFTER STORING "+ JSON.stringify(resp)))
-    .catch(err => console.log("ERROR MOFOS"+JSON.stringify(err)))
+    then(resp => logger.info("AFTER STORING "+ JSON.stringify(resp)))
+    .catch(err => logger.info("ERROR MOFOS"+JSON.stringify(err)))
 };
 
 
@@ -58,8 +66,8 @@ export default function App() {
         //let key = crypto.createHash('sha256').update(currentUser?.email).digest('hex');
         let key =  CryptoJS.SHA256(currentUser?.email).toString();
 
-        console.log("############");
-        console.log(key);
+        logger.info("############");
+        logger.info(key);
 
         saveIntoStorage("email", currentUser?.email);
         saveIntoStorage("pvtKey", key);
@@ -75,7 +83,7 @@ export default function App() {
 
           if(responseOne.data){
             let textileKey = decrypt(responseOne.data.textileKey,currentUser?.email.trim());
-            console.log(`Textile Key ${textileKey}`);
+            logger.info(`Textile Key ${textileKey}`);
             //alert(textileKey);
             
             saveIntoStorage("bucketName", responseOne.data.bucketName);
@@ -87,19 +95,25 @@ export default function App() {
             saveIntoStorage("identity",responseOne.data.identity);
             saveIntoStorage("userId",responseOne.data._id);
 
-            console.log(`Encrypted identity gotten ${responseOne.data.textileKey}`)
-            console.log(`decrypted identity ${textileKey}`)
+            logger.info(`Encrypted identity gotten ${responseOne.data.textileKey}`)
+            logger.info(`decrypted identity ${textileKey}`)
 
           }
 
-          
-          
-          saveIntoStorage("documents",JSON.stringify(responseTwo.data));
-          console.log(`documents ${JSON.stringify(responseTwo.data)}`);
+          let docs = {};
+
+          if(responseTwo.data.length >0){
+            responseTwo.data.forEach(d => {
+              docs[d.documentType._id] = d;
+            });
+          }
+
+          saveIntoStorage("documents",JSON.stringify(docs));
+          logger.info(`documents ${JSON.stringify(docs)}`);
           setLoader(false);
 
         })).catch(err => {
-          console.log(`ERROR WITH AXIOS ${JSON.stringify(err)}`)
+          logger.info(`ERROR WITH AXIOS ${JSON.stringify(err)}`)
           setLoader(false);
         });;
 

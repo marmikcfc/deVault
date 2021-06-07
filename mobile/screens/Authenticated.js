@@ -5,7 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {endpoint} from './../utils/constants';
 import ViewDocuments from './ViewDocuments';
+import log from 'loglevel';
 
+
+var logger = log.getLogger("Authenticated");
 
 
 
@@ -27,7 +30,7 @@ export default function Authenticated() {
     (async function setDocuments(){
       const id = await AsyncStorage.getItem("userId");
       setUserId(id);
-      console.log("user id "+id);
+      logger.info("user id "+id);
       })();
   },[]);
 
@@ -46,11 +49,11 @@ export default function Authenticated() {
         setUserIds(userIds);
       
         setDocs(documents);
-        console.log(`data recieved ${JSON.stringify(response.data)}`);
+        logger.info(`data recieved ${JSON.stringify(response.data)}`);
     }).catch(err => {
-      console.log(`Error ${JSON.stringify(err)}`);
+      logger.info(`Error ${JSON.stringify(err)}`);
     });
-    console.log(`docs loadedddd  ${JSON.stringify(docs)}`);
+    logger.info(`docs loadedddd  ${JSON.stringify(docs)}`);
   },[]);
 
   return (

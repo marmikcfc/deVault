@@ -8,19 +8,22 @@ import UploadFile from './UploadFile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownScreen from './ShareScreen';
 
+import log from 'loglevel';
+var logger = log.getLogger("View Documents");
+
 function ViewDocuments({docs, userIds}) {
   
     const [userId,setUserId] = useState(null); 
     const [shareWith,setShareWith] = useState([]);
     const [usernames,setUsernames] = useState([]);
 
-    console.log(`USerIds to render ${JSON.stringify(userIds)}`);
+    logger.info(`USerIds to render ${JSON.stringify(userIds)}`);
 
     useEffect(() => {
       (async function setDocuments(){
         const id = await AsyncStorage.getItem("userId");
         setUserId(id);
-        console.log("user id "+id);
+        logger.info("user id "+id);
         setShareWith(Array.apply(null, Array(userIds.length)).map(function () {}));
         let uname = await AsyncStorage.getItem("userNames");
         let unames = JSON.parse(uname);
@@ -45,9 +48,9 @@ function ViewDocuments({docs, userIds}) {
       };
 
       axios.post(`${endpoint}document/share`,payload).then(response => {
-        console.log(`Shared documet ${doc._id}`);
+        logger.info(`Shared documet ${doc._id}`);
       }).then(err => {
-        console.log(`something went wrong ${err}`);
+        logger.info(`something went wrong ${err}`);
       });
     }
 
@@ -67,7 +70,7 @@ function ViewDocuments({docs, userIds}) {
     }*/
 
     const renderDoc = (doc,index) => {
-        console.log(`rendering ${JSON.stringify(doc)} \n for userID ${JSON.stringify(userIds[index])}  \n rendering ${ipfsGateway}/ipfs/${doc.cid}`)
+        logger.info(`rendering ${JSON.stringify(doc)} \n for userID ${JSON.stringify(userIds[index])}  \n rendering ${ipfsGateway}/ipfs/${doc.cid}`)
        return (
 
       <View>

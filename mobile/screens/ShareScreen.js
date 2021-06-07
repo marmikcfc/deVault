@@ -5,6 +5,10 @@ import {View, StyleSheet} from 'react-native';
 import DropDown from 'react-native-paper-dropdown';
 import {endpoint} from '../utils/constants';
 import axios from 'axios';
+import log from 'loglevel';
+
+
+var logger = log.getLogger("ShareScreen");
 
 export default function DropDownScreen({doc, index, userId}) {
 
@@ -13,10 +17,10 @@ export default function DropDownScreen({doc, index, userId}) {
   const [visible,setVisible] = useState(false);
 
   useEffect(() => {
-    console.log("use effect and docTypes == null")
+    logger.info("use effect and docTypes == null")
     if (usernames.length == 0){
-      console.log("use effect and docTypes != null")
-      console.log(`User ID ${userId}`);
+      logger.info("use effect and docTypes != null")
+      logger.info(`User ID ${userId}`);
       axios.get(`${endpoint}users`).then(response => {
 
         if(response?.data){
@@ -24,12 +28,12 @@ export default function DropDownScreen({doc, index, userId}) {
            
             return {value:u._id,label:u.displayName}
           });
-          console.log(`userNAmes   ${JSON.stringify(usernames)}`);
+          logger.info(`userNAmes   ${JSON.stringify(usernames)}`);
             setUsernames(userNames);
             setVisible(true);
         }
       }).catch(err => {
-        console.log(`something went wrong mofos ${err}`);
+        logger.info(`something went wrong mofos ${err}`);
       });
     }
 });
@@ -44,9 +48,9 @@ const shareWithUser = () => {
   };
 
   axios.post(`${endpoint}document/share`,payload).then(response => {
-    console.log(`Shared documet ${doc._id}`);
+    logger.info(`Shared documet ${doc._id}`);
   }).then(err => {
-    console.log(`something went wrong ${err}`);
+    logger.info(`something went wrong ${err}`);
   });
 }
 
