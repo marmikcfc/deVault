@@ -11,11 +11,14 @@ import { connect,mongoose } from 'mongoose';
 import {config} from 'dotenv';
 
 config();
-connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false}).catch(err => {
+connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false}).then(done => {
+  console.log("CONEECTED TO MONGO")
+}).catch(err => {
   console.log(err);
 });
 
 const app = express();
+
 app.use(cors());
 app.options('*', cors());
 

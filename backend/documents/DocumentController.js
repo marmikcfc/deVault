@@ -115,7 +115,7 @@ router.get('/history/:id', function(req,res) {
                 var companyActions = ["requested","approved","rejected"];
         
                 results.forEach( result => {
-                    let r = {document:result.documentId};
+                    let r = {document:result.documentId, time:result.createdAt};
                     console.log(`resulrt ${result} \n\n`)
                     var stat = result.status
 
@@ -131,9 +131,7 @@ router.get('/history/:id', function(req,res) {
                         case 'granted':
                             r.action = 'granted';
                             r.by = user;
-                            if(result.hasOwnProperty('shareRequestId')){
-                                r.for = result.shareRequestId.company;
-                            }
+                            r.for = result.shareRequestId.company;
                             break;
                         
                         case "requested":
