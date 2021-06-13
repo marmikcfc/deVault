@@ -23,3 +23,6 @@ To Create SHA1 KEy
  - Lock/unlock selfie
  - JWT for user
  - Account management for companies [Create Account, Forget Password and other things]
+ - Node Mailer for notifications
+ - Get Share request by status end point!
+ - Get Tasks endPoints

@@ -12,6 +12,7 @@ import ViewDocuments from './ViewDocuments';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import log from 'loglevel';
+import { History } from './History';
 
 var logger = log.getLogger("ProfileTrial");
 logger.setLevel('INFO');
@@ -21,6 +22,7 @@ function ProfileScreen({ navigation }) {
   const [docTypes,setDocTypes] = useState([]);
   const [docs,setDocs] = useState([]);
   const [docIdMap,setDocIdMap] = useState({}); //Already uploaded docIds
+  const [userId,setUserId] = useState(null); 
 
 
 
@@ -28,6 +30,9 @@ function ProfileScreen({ navigation }) {
   useEffect(() => {
     (async function setDocuments(){
     const documents = await AsyncStorage.getItem("documents");
+    const uid = await AsyncStorage.getItem("userId");
+    setUserId(uid)
+
     logger.info(`docs unloadedddd  ${JSON.stringify(docs)}`)
     setDocs(JSON.parse(documents));
     //let docMap = {};
@@ -76,7 +81,8 @@ function ProfileScreen({ navigation }) {
                     /* 1. Navigate to the Details route with params */
                     navigation.navigate('Details', {
                       doc: docIdMap.hasOwnProperty(docType.id)? docIdMap[docType.id]:null,
-                      docType: docType
+                      docType: docType,
+                      userId: userId
                     });
                   }}>
                     
@@ -100,8 +106,6 @@ function ProfileScreen({ navigation }) {
 
 {renderButtons()}
 
-
-
 </ScrollView>
 
     </View>
@@ -109,14 +113,18 @@ function ProfileScreen({ navigation }) {
 }
 
 function DetailsScreen({ route, navigation }) {
-  const { doc,docType } = route.params;
+  const { doc,docType,userId } = route.params;
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <ScrollView>
+
       <Text>Details Screen</Text>
       <Text>doc: {JSON.stringify(doc)}</Text>
-      <Text> <UploadFile documentType = {docType}/> </Text>
-        
+      <Text> <UploadFile documentType = {docType} userId={userId} navigation = {navigation}/> </Text>
+
+      </ScrollView>
+      
     </View>
   );
 }
@@ -129,6 +137,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={ProfileScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
+        <Stack.Screen name="History" component={History} />
       </Stack.Navigator>
     </NavigationContainer>
   );

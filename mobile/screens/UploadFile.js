@@ -21,6 +21,9 @@ import log from 'loglevel';
 import 'intl';
 import 'intl/locale-data/jsonp/en'; // or any other locale you need
 import ViewDocuments from './ViewDocuments';
+import DropDownScreen from './ShareScreen';
+import History from './History';
+
 
 
 
@@ -33,13 +36,13 @@ var RNFS = require('react-native-fs');
 
 
 
-export default function UploadFile( {documentType}) {
+export default function UploadFile( {documentType, userId, navigation}) {
 
     const [files, setFiles] = useState(['','']);
     //const [firstLoad, setFirstLoad] = useState(true);
     const [config,setConfig] = useState({});
 
-    const [docNumber,setDocNumber] = useState(1);
+    const [docNumber,setDocNumber] = useState("");
     const [expiryDate,setExpiryDate] = useState(new Date());
 
     const [date, setDate] = useState(undefined);
@@ -443,14 +446,28 @@ export default function UploadFile( {documentType}) {
 
 
     return (
+      <View style={styles.screen}> 
+        
       <View>
-
-        <ScrollView>
-
         {
-          documentObject.hasOwnProperty('documentType')? (<ViewDocument document = {documentObject} />):null
-        }
+          documentObject.hasOwnProperty('documentType')? (<View>    
+             <View>
+            <Text>
+              Share with
+              </Text>
+              <DropDownScreen doc={documentObject}/>
+            </View>
+            <View>
+            <ViewDocument document = {documentObject} />
+              </View>
+            
 
+           </View> ):null
+        }
+        </View>
+
+      <View>
+        <View>
         {documentType.category == "SELFIE"? (<Text> 
 
             Click a picture with the {docNumber} written on the paper and upload:
@@ -460,9 +477,13 @@ export default function UploadFile( {documentType}) {
               value={docNumber}
               onChangeText={text => setDocNumber(text)}
             />)}
+      
+      </View>
 
+      <View>  
         {documentType.doesExpire == true? renderDateComponent(): null}
-
+      </View>
+      
         <View>  
         {documentType.numDocuments == 1 ? 
         ( <Text> {renderUploadComponents(documentType.name,0) }
@@ -479,7 +500,25 @@ export default function UploadFile( {documentType}) {
 
         </View>
 
-        </ScrollView>
+        </View>
+
+
+        <View>
+        <Button style={{padding:10, marginHorizontal:20, borderRadius:20, height:65 , width:300}} icon="camera" mode="contained" 
+                onPress={() => {
+                    /* 1. Navigate to the Details route with params */
+                    navigation.navigate('History', {
+                      docId: documentObject._id,
+                      docType:documentType
+                    });
+                  }}>
+                    
+                     History
+        </Button>
+
+        </View>
+
+       
 
       </View>
     

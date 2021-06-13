@@ -4,7 +4,6 @@ import {SafeAreaView, StyleSheet, View,Text, Image} from 'react-native';
 import {endpoint, ipfsGateway} from './../utils/constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DropDownScreen from './ShareScreen';
 
 import log from 'loglevel';
 
@@ -13,21 +12,6 @@ logger.setLevel('INFO');
 
 function ViewDocument({document}) {
   
-    const [userId,setUserId] = useState(null); 
-    const [shareWith,setShareWith] = useState([]);
-    const [usernames,setUsernames] = useState([]);
-    const [containsMultiple, setContainsMultiple] = useState(false)
-
-
-    useEffect(() => {
-        (async function setDocuments(){
-              if ((document.cid.length) == 2){
-                  setContainsMultiple(true);
-              }
-          })();
-            
-      },[]);
-
     const renderDoc = (doc,index) => {
         logger.info(`rendering ${JSON.stringify(doc)} \n f \n rendering ${ipfsGateway}/ipfs/${doc.cid}`)
        return (
@@ -39,7 +23,7 @@ function ViewDocument({document}) {
           source={{ uri:  `${ipfsGateway}/ipfs/${doc}`}}
           resizeMode = {'contain'}
           />
-        
+
       </View>
 
        )
@@ -47,15 +31,16 @@ function ViewDocument({document}) {
 
 
   return (
-    <View >
-        <Text> Documents</Text>
+      <View>
+      <Text> Documents</Text>
       {
           document.cid.map((cid,index) => {
                     return renderDoc(cid,index);
           })
-
       }
-    </View>
+      </View>
+     
+      
   );
   
 }

@@ -9,8 +9,9 @@ import log from 'loglevel';
 
 
 var logger = log.getLogger("ShareScreen");
+logger.setLevel("INFO");
 
-export default function DropDownScreen({doc, index, userId}) {
+export default function DropDownScreen({doc, userId}) {
 
   const [userName,setUserName] = useState(null);
   const [usernames,setUsernames] = useState([]);
@@ -21,17 +22,18 @@ export default function DropDownScreen({doc, index, userId}) {
     if (usernames.length == 0){
       logger.info("use effect and docTypes != null")
       logger.info(`User ID ${userId}`);
-      axios.get(`${endpoint}users`).then(response => {
+      axios.get(`${endpoint}users/enterprise`).then(response => {
 
         if(response?.data){
-          let userNames = response.data.map(u => {
-           
-            return {value:u._id,label:u.displayName}
+
+          var userNames = response.data.map((u,index) => {
+            let company = {value:u._id,label:u.displayName}
+            logger.info(`Company   ${JSON.stringify(company)}`);
+            return company;
           });
-          logger.info(`userNAmes   ${JSON.stringify(usernames)}`);
-            setUsernames(userNames);
-            setVisible(true);
-        }
+
+          Promise.all(userNames).then(unames => {setUsernames(unames)}).catch(err => {logger.error(`Something horribly went wrong!`)});
+          }
       }).catch(err => {
         logger.info(`something went wrong mofos ${err}`);
       });
@@ -55,17 +57,10 @@ const shareWithUser = () => {
 }
 
 
-  const genderList = [
-    {label: 'Male', value: 'male'},
-    {label: 'Female', value: 'female'},
-    {label: 'Others', value: 'others'},
-  ];
-
-
-
   
   return (
-      <View  key={index}>
+    <Provider>
+      <View>
         <DropDown
           label={'Users'}
           mode={'outlined'}
@@ -85,6 +80,9 @@ const shareWithUser = () => {
         </Button>
 
       </View>
+
+    </Provider>
+      
   );
 }
 
