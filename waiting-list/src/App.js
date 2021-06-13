@@ -9,6 +9,7 @@ import Amplify from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import awsconfig from './aws-exports';
 import { render } from 'react-dom';
+import Hibp from './Hibp';
 Amplify.configure(awsconfig);
 
 const NOTSIGNIN = 'You are NOT logged in';
@@ -79,7 +80,9 @@ function App() {
     alert(num);
 
     setData(Object.assign(data,{PhoneNumber:num}));
-
+    setScreenToShow(3);
+    return;
+    /*
     setMessage(VERIFYNUMBER);
     Auth.signIn(num)
       .then((result) => {
@@ -98,11 +101,13 @@ function App() {
           console.log(e.code);
           console.error(e);
         }
-      });
+      }); */
   };
 
   const signUp = async () => {
-    let nums = number.split(" ");
+    setScreenToShow(3);
+    return;
+    /*let nums = number.split(" ");
     //alert(nums);
     let n = nums[1].split("-");
     //alert(n);
@@ -116,7 +121,7 @@ function App() {
         phone_number: num,
       },
     }).then(() => signIn());
-    return result;
+    return result;*/
   };
 
   const verifyOtp = () => {
@@ -182,6 +187,8 @@ function App() {
       <Typography>
         Thanks {data.name} for signing in for early access.
         We'll let you in quickly.
+        Till then, we've crawled over the internet to get you this 
+        <Hibp email={data.email} />
       </Typography>
     )
   }

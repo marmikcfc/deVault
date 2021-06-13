@@ -1,3 +1,4 @@
+//const Company = require('./model');
 const fs = require('fs');
 const readline = require('readline');
 const {
@@ -11,7 +12,7 @@ var express = require('express');
 const mongoose = require('mongoose')
 var app = express();
 const model = require('./model'); 
-const companySchema = require('./model');
+//const Company = require('./model');
 
 var oAuth2Client
 
@@ -19,8 +20,8 @@ const bodyParser = require('body-parser')
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}))
 
-mongoose.connect('mongodb+srv://marmik:M40HPVcpGbD6Hcok@cluster0.vjw23.mongodb.net/deVault-KYC?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true
-}).then(() => {
+mongoose.connect('mongodb+srv://marmik:M40HPVcpGbD6Hcok@cluster0.vjw23.mongodb.net/deVault-KYC?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true,useCreateIndex: true,})
+.then(() => {
     console.log('connected to db')
 }).catch((error) => {
     console.log(error)
@@ -46,7 +47,7 @@ app.get('/validate_google_login', async (req, res) => {
     res.status(200).send(message)
 })
 
-app.post('/add_new_company', async (req, res) => {
+app.post('/add_new_company',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const body = req.body.body;
@@ -57,9 +58,7 @@ app.post('/add_new_company', async (req, res) => {
     //     body,
     //     news
     // })
-   companies.create({
-        name, email, body, news
-    }).then((result) => {
+    companies.create(req.body).then((result) => {
         res.status(200).send(result)
         }).catch((err) => {
         console.log(error)
