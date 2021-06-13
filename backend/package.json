@@ -8,6 +8,7 @@
   "dependencies": {
     "@textile/hub": "^6.1.2",
     "amqplib": "^0.5.5",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bip39": "^3.0.4",
     "config": "3.3.1",

@@ -5,6 +5,7 @@ import AuthController from './auth/AuthController';
 import SignupController from './signup/SignupController';
 import DocumentController from './documents/DocumentController';
 import ShareRequestController from './requests/RequestController';
+import WaitingListController from './waitingList/WaitingListController';
 
 
 import { connect,mongoose } from 'mongoose';
@@ -27,6 +28,8 @@ app.use('/devault/api/authenticate', AuthController);
 app.use('/devault/api/signup', SignupController);
 app.use('/devault/api/document', DocumentController);
 app.use('/devault/api/request', ShareRequestController);
+app.use('/devault/api/waitingList', WaitingListController);
+
 
 
 
