@@ -1,0 +1,22 @@
+{
+  "name": "gmail-email-reader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sid",
+  "license": "ISC",
+  "dependencies": {
+    "base-64": "^1.0.0",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.9",
+    "express": "^4.17.1",
+    "googleapis": "^73.0.0",
+    "js-base64": "^3.6.0",
+    "mailparser": "^3.2.0",
+    "mongoose": "^5.12.13",
+    "open": "^8.0.8"
+  }
+}
