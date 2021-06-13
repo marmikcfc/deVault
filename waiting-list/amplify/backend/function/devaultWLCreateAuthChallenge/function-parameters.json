@@ -1,0 +1,18 @@
+{
+  "trigger": true,
+  "modules": [
+    "boilerplate-create-challenge"
+  ],
+  "parentResource": "devaultWL",
+  "functionName": "devaultWLCreateAuthChallenge",
+  "resourceName": "devaultWLCreateAuthChallenge",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "/Users/marmikpandya/.config/yarn/global/node_modules/amplify-category-auth/provider-utils/awscloudformation/triggers/CreateAuthChallenge",
+  "triggerTemplate": "CreateAuthChallenge.json.ejs",
+  "triggerEventPath": "CreateAuthChallenge.event.json",
+  "roleName": "devaultWLCreateAuthChallenge",
+  "skipEdit": true,
+  "CHALLENGEANSWER": "",
+  "enableCors": false
+}

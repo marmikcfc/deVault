@@ -1,0 +1,39 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-waitinglist-dev-100337-authRole",
+      "UnauthRoleArn": "arn:aws:iam::471659940187:role/amplify-waitinglist-dev-100337-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::471659940187:role/amplify-waitinglist-dev-100337-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-waitinglist-dev-100337-deployment",
+      "UnauthRoleName": "amplify-waitinglist-dev-100337-unauthRole",
+      "StackName": "amplify-waitinglist-dev-100337",
+      "StackId": "arn:aws:cloudformation:ap-south-1:471659940187:stack/amplify-waitinglist-dev-100337/8792e730-cc00-11eb-981a-061ab028d7d2",
+      "AmplifyAppId": "dx05glrmbwuh9"
+    },
+    "categories": {
+      "function": {
+        "devaultWLCreateAuthChallenge": {
+          "CHALLENGEANSWER": "",
+          "deploymentBucketName": "amplify-waitinglist-dev-100337-deployment",
+          "s3Key": "amplify-builds/devaultWLCreateAuthChallenge-48524541623858655749-build.zip"
+        },
+        "devaultWLDefineAuthChallenge": {
+          "deploymentBucketName": "amplify-waitinglist-dev-100337-deployment",
+          "s3Key": "amplify-builds/devaultWLDefineAuthChallenge-6b474b714f6565487641-build.zip"
+        },
+        "devaultWLPreSignup": {
+          "deploymentBucketName": "amplify-waitinglist-dev-100337-deployment",
+          "s3Key": "amplify-builds/devaultWLPreSignup-52624641614d37547367-build.zip"
+        },
+        "devaultWLVerifyAuthChallengeResponse": {
+          "deploymentBucketName": "amplify-waitinglist-dev-100337-deployment",
+          "s3Key": "amplify-builds/devaultWLVerifyAuthChallengeResponse-61734255593466346543-build.zip"
+        }
+      },
+      "auth": {
+        "devaultWL": {}
+      }
+    }
+  }
+}

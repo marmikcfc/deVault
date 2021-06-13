@@ -1,0 +1,17 @@
+{
+  "trigger": true,
+  "modules": [
+    "custom"
+  ],
+  "parentResource": "devaultWL",
+  "functionName": "devaultWLPreSignup",
+  "resourceName": "devaultWLPreSignup",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "/Users/marmikpandya/.config/yarn/global/node_modules/amplify-category-auth/provider-utils/awscloudformation/triggers/PreSignup",
+  "triggerTemplate": "PreSignup.json.ejs",
+  "triggerEventPath": "PreSignup.event.json",
+  "roleName": "devaultWLPreSignup",
+  "skipEdit": true,
+  "enableCors": false
+}

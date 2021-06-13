@@ -1,0 +1,17 @@
+{
+  "trigger": true,
+  "modules": [
+    "boilerplate-verify"
+  ],
+  "parentResource": "devaultWL",
+  "functionName": "devaultWLVerifyAuthChallengeResponse",
+  "resourceName": "devaultWLVerifyAuthChallengeResponse",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "/Users/marmikpandya/.config/yarn/global/node_modules/amplify-category-auth/provider-utils/awscloudformation/triggers/VerifyAuthChallengeResponse",
+  "triggerTemplate": "VerifyAuthChallengeResponse.json.ejs",
+  "triggerEventPath": "VerifyAuthChallengeResponse.event.json",
+  "roleName": "devaultWLVerifyAuthChallengeResponse",
+  "skipEdit": true,
+  "enableCors": false
+}

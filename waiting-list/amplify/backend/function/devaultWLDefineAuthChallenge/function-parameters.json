@@ -1,0 +1,17 @@
+{
+  "trigger": true,
+  "modules": [
+    "boilerplate-define-challenge"
+  ],
+  "parentResource": "devaultWL",
+  "functionName": "devaultWLDefineAuthChallenge",
+  "resourceName": "devaultWLDefineAuthChallenge",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "/Users/marmikpandya/.config/yarn/global/node_modules/amplify-category-auth/provider-utils/awscloudformation/triggers/DefineAuthChallenge",
+  "triggerTemplate": "DefineAuthChallenge.json.ejs",
+  "triggerEventPath": "DefineAuthChallenge.event.json",
+  "roleName": "devaultWLDefineAuthChallenge",
+  "skipEdit": true,
+  "enableCors": false
+}
